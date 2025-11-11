@@ -42,6 +42,50 @@ Created views and tables to transform the data. Nothing fancy - just learning ho
 - Staging models (cleaning & basic transformations)
 - Mart models (business-ready data)
 
+```
+┌────────────────────────────────────────────────────────┐
+│              SNOWFLAKE RAW LAYER                       │
+│  (TPCH_SF1 database - Snowflake sample data)           │
+└────────────────────┬──────────────────────────── ──────┘
+                     │
+                     ▼
+┌────────────────────────────────────────────────────────┐
+│              STAGING MODELS (dbt)                      │
+│                                                        │
+│  • Rename columns to standards                         │
+│  • Convert data types                                  │
+│  • Add business keys                                   │
+│  • Filter out invalid records                          │
+│  • Materialized as: VIEWS                              |
+|  example: tpch_sources.yml                             │
+└────────────────────┬───────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│              INTERMEDIATE MODELS (dbt)                  │
+│                                                         │
+│  • Join related entities                                │
+│  • Calculate derived metrics                            │
+│  • Aggregate to appropriate grain                       │
+│  • Materialized as: VIEWS or TABLES                     |
+| examples: any files with int_, like int_order_items.sql │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     ▼
+┌────────────────────────────────────────────────────────┐
+│              MARTS MODELS (dbt)                        │
+│                                                        │
+│  • Business-ready analytics tables                     │
+│  • Dimensional models (facts & dimensions)             │
+│  • Customer-facing aggregations                        │
+│  • Materialized as: TABLES                             │
+│                                                        │
+│  Examples:                                             │
+│  • fct_orders (order-level facts)                      │
+|                                                        │
+└────────────────────────────────────────────────────────┘
+```
+
 **The Gotcha:** My models kept materializing as views instead of tables even though I set `materialized='table'` in `dbt_project.yml`. Had to explicitly set it per model. Still not sure why - food for thought. Worked as expected in another project..
 
 ### Data Tests
